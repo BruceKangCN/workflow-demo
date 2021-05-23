@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1vt0a3e" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1vt0a3e" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:process id="loanApproval" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="loan request received">
       <bpmn:outgoing>Flow_0liai2y</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0liai2y" sourceRef="StartEvent_1" targetRef="Activity_0ysb1fc" />
     <bpmn:userTask id="Activity_0ysb1fc" name="check the request">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="approved" label="Approved?" type="boolean" />
+        </camunda:formData>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0liai2y</bpmn:incoming>
       <bpmn:outgoing>Flow_0yl0oje</bpmn:outgoing>
     </bpmn:userTask>
@@ -15,7 +20,7 @@
     <bpmn:sequenceFlow id="Flow_0yl0oje" sourceRef="Activity_0ysb1fc" targetRef="Event_0vk5lpn" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1tb30nf">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="loanApproval">
       <bpmndi:BPMNEdge id="Flow_0liai2y_di" bpmnElement="Flow_0liai2y">
         <di:waypoint x="215" y="117" />
         <di:waypoint x="270" y="117" />

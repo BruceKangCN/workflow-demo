@@ -10,8 +10,14 @@ import org.springframework.stereotype.Component;
 public class LoanApproval {
 
     @Autowired
-    private RuntimeService runtimeService;
+    private RuntimeService runtimeService; // camunda runtime service
 
+    /**
+     * auto start the process instance after deployment
+     * the key name is pre-defined in bpmn file
+     *
+     * @param event
+     */
     @EventListener
     public void processPostDeploy(PostDeployEvent event) {
         runtimeService.startProcessInstanceByKey("loanApproval");

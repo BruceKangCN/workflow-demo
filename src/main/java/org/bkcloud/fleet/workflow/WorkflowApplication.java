@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableProcessApplication
+@EnableProcessApplication // enable camunda process application
 public class WorkflowApplication {
 
 	public static void main(String[] args) {
