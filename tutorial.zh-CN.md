@@ -45,6 +45,7 @@
        create: All tasks
    ```
    这将创建一个名为`Demo`的管理员，账户ID为`demo`，账户密码为`demo`，并且部署资源目录下所有`**/*.bpmn`定义的任务  
+   
    > 值得注意的是在该文件中并不需要配置数据源，因为本教程使用`H2`嵌入式内存数据库  
 2. 运行`main`方法，访问[控制台](http://localhost:8080)，以定义好的ID、密码登录，之后，便可以在 **Tasklist** 中看到一个用来显示所有任务的 **All tasks** 过滤器
 
@@ -52,8 +53,9 @@
 
 1. 打开`Camunda Modeler`，创建一个如下的流程模型
    ![loan approval](img/loanApproval.png)
+   
    > 提示：如果你不熟悉如何创建流程模型，可以访问[该教程](https://docs.camunda.org/get-started/quick-start/service-task/)  
-
+   
 2. 将该流程模型保存为资源目录下的`processes/loanApproval.bpmn`
 3. 在主类上添加`@EnableProcessApplication`注解，这将创建流程应用
 4. 在`<basePackage>.process.LoanApproval`类中添加以下代码，这将使`loanApproval`流程实例被部署后自动执行
@@ -217,9 +219,9 @@ public class QuartzConfiguration {
 2. 在资源目录下编写`schema-h2.sql`
    ```sql
    CREATE TABLE city(
-   id INT PRIMARY KEY AUTO_INCREMENT,
-   name VARCHAR(255),
-   population INT
+       id INT PRIMARY KEY AUTO_INCREMENT,
+       name VARCHAR(255),
+       population INT
    );
    ```
 3. 在资源目录下编写`data-h2.sql`
@@ -236,20 +238,20 @@ public class QuartzConfiguration {
 4. 编写`POJO`类`<basePackage>.entity.City`
    ```java
    package org.bkcloud.fleet.workflow.entity;
-
+   
    import lombok.AllArgsConstructor;
    import lombok.Data;
    import lombok.NoArgsConstructor;
-
+   
    import javax.persistence.*;
-
+   
    @Entity
    @Table(name = "city")
    @Data
    @NoArgsConstructor
    @AllArgsConstructor
    public class City {
-
+   
      @Id
      @GeneratedValue(strategy = GenerationType.AUTO)
      private Integer id;
@@ -257,13 +259,13 @@ public class QuartzConfiguration {
      private String name;
      @Column(name = "population")
      private Long population;
-
+   
    }
    ```
 5. 编写`JpaRepository`接口`<basePackage>.repository.ICityRepository`
    ```java
    package org.bkcloud.fleet.workflow.repository;
-
+   
    import org.bkcloud.fleet.workflow.entity.City;
    import org.springframework.data.domain.Example;
    import org.springframework.data.domain.Page;
@@ -271,81 +273,81 @@ public class QuartzConfiguration {
    import org.springframework.data.domain.Sort;
    import org.springframework.data.jpa.repository.JpaRepository;
    import org.springframework.stereotype.Repository;
-
+   
    import java.util.List;
    import java.util.Optional;
-
+   
    @Repository
    public interface ICityRepository extends JpaRepository<City, Integer> {
        @Override
        List<City> findAll();
-
+   
        @Override
        List<City> findAll(Sort sort);
-
+   
        @Override
        Page<City> findAll(Pageable pageable);
-
+   
        @Override
        List<City> findAllById(Iterable<Integer> iterable);
-
+   
        @Override
        long count();
-
+   
        @Override
        void deleteById(Integer integer);
-
+   
        @Override
        void delete(City city);
-
+   
        @Override
        void deleteAll(Iterable<? extends City> iterable);
-
+   
        @Override
        void deleteAll();
-
+   
        @Override
        <S extends City> S save(S s);
-
+   
        @Override
        <S extends City> List<S> saveAll(Iterable<S> iterable);
-
+   
        @Override
        Optional<City> findById(Integer integer);
-
+   
        @Override
        boolean existsById(Integer integer);
-
+   
        @Override
        void flush();
-
+   
        @Override
        <S extends City> S saveAndFlush(S s);
-
+   
        @Override
        void deleteInBatch(Iterable<City> iterable);
-
+   
        @Override
        void deleteAllInBatch();
-
+   
        @Override
        City getOne(Integer integer);
-
+   
        @Override
        <S extends City> Optional<S> findOne(Example<S> example);
-
+   
        @Override
        <S extends City> List<S> findAll(Example<S> example);
-
+   
        @Override
        <S extends City> List<S> findAll(Example<S> example, Sort sort);
-
+   
        @Override
        <S extends City> Page<S> findAll(Example<S> example, Pageable pageable);
-
+   
        @Override
        <S extends City> long count(Example<S> example);
-
+   
        @Override
        <S extends City> boolean exists(Example<S> example);
    }
@@ -356,35 +358,35 @@ public class QuartzConfiguration {
 1. 编写`<basePackage>.service.ICityService`服务接口
    ```java
    package org.bkcloud.fleet.workflow.service;
-
+   
    import org.bkcloud.fleet.workflow.entity.City;
-
+   
    import java.util.List;
-
+   
    public interface ICityService {
-
+   
        List<City> findAll();
-
+   
    }
    ```
 2. 编写`<basePackage>.service.impl.CityServiceImpl`服务实现类
    ```java
    package org.bkcloud.fleet.workflow.service.impl;
-
+   
    import org.bkcloud.fleet.workflow.entity.City;
    import org.bkcloud.fleet.workflow.repository.ICityRepository;
    import org.bkcloud.fleet.workflow.service.ICityService;
    import org.springframework.beans.factory.annotation.Autowired;
    import org.springframework.stereotype.Service;
-
+   
    import java.util.List;
-
+   
    @Service
    public class CityServiceImpl implements ICityService {
-
+   
        @Autowired
        private ICityRepository cityRepository;
-
+   
        @Override
        public List<City> findAll() {
            return cityRepository.findAll();
@@ -397,7 +399,7 @@ public class QuartzConfiguration {
 1. 编写`<basePackage>.controller.CityController`控制器
    ```java
    package org.bkcloud.fleet.workflow.controller;
-
+   
    import org.bkcloud.fleet.workflow.entity.City;
    import org.bkcloud.fleet.workflow.service.ICityService;
    import org.springframework.beans.factory.annotation.Autowired;
@@ -405,17 +407,17 @@ public class QuartzConfiguration {
    import org.springframework.web.bind.annotation.RequestMapping;
    import org.springframework.web.bind.annotation.RestController;
    import org.springframework.web.servlet.ModelAndView;
-
+   
    import java.util.HashMap;
    import java.util.List;
-
+   
    @RestController
    @RequestMapping("/city")
    public class CityController {
-
+   
        @Autowired
        private ICityService cityService;
-
+   
        @GetMapping("/all")
        public ModelAndView displayCities() {
            List<City> cities = cityService.findAll();
@@ -430,7 +432,7 @@ public class QuartzConfiguration {
    h2 {
        color: blue;
    }
-
+   
    td:nth-child(3) {
        text-align: right;
    }
