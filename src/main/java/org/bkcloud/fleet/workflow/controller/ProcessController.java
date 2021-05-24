@@ -45,11 +45,10 @@ public class ProcessController {
      */
     @GetMapping("/list")
     public List<ProcessInstanceDto> instanceList() {
-        List<ProcessInstance> processInstances = getProcessInstanceQuery().list();
-        List<ProcessInstanceDto> processInstanceDtoList = new ArrayList<>();
-        for (ProcessInstance instance : processInstances) { // convert to DTO so they can be transferred
-            processInstanceDtoList.add(new ProcessInstanceDto(instance));
+        List<ProcessInstanceDto> list = new ArrayList<>();
+        for (ProcessInstance instance : getProcessInstanceQuery().list()) { // convert to DTO so they can be transferred
+            list.add(new ProcessInstanceDto(instance));
         }
-        return processInstanceDtoList;
+        return list;
     }
 }
