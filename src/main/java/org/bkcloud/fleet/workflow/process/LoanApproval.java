@@ -16,7 +16,7 @@ public class LoanApproval {
      * auto start the process instance after deployment
      * the key name is pre-defined in bpmn file
      *
-     * @param event the post deploy event triggered by task deployment
+     * @param event the post deploy event triggered by process instance deployment
      */
     @EventListener
     public void processPostDeploy(PostDeployEvent event) {
