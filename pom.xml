@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<camunda.spring-boot.version>7.15.0</camunda.spring-boot.version>
+		<camunda.template-engine-freemarker.version>2.0.0</camunda.template-engine-freemarker.version>
 	</properties>
 
 	<dependencies>
@@ -58,6 +59,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-quartz</artifactId>
 		</dependency>
+
+		<!-- freemarker -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.template-engines</groupId>
+			<artifactId>camunda-template-engines-freemarker</artifactId>
+			<version>${camunda.template-engine-freemarker.version}</version>
+		</dependency><!-- freemarker template engine support for camunda -->
 
 		<!-- unit test -->
 		<dependency>
