@@ -30,6 +30,6 @@ public class CityController {
         List<City> cities = cityService.findAll();
         HashMap<String, List<City>> map = new HashMap<>();
         map.put("cities", cities);
-        return new ModelAndView("showCities", map);
+        return new ModelAndView("displayCities", map);
     }
 }
