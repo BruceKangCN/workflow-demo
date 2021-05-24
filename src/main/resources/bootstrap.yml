@@ -1,2 +1,14 @@
 server:
   port: 8080
+
+spring:
+  quartz:
+    job-store-type: jdbc # store jobs in h2 database, change this to "memory" for in-memory storage
+    properties.org.quartz:
+      scheduler:
+        instanceId: AUTO
+      threadPool:
+        threadCount: 4
+  freemarker:
+    template-loader-path: classpath:/templates/
+    suffix: .ftlh

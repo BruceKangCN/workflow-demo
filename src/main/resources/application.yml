@@ -7,10 +7,10 @@ camunda.bpm:
     create: All tasks # the name for "show all" filter
 
 spring:
-  quartz:
-    job-store-type: jdbc # store jobs in h2 database, change this to "memory" for in-memory storage
-    properties.org.quartz:
-      scheduler:
-        instanceId: AUTO
-      threadPool:
-        threadCount: 4
+  datasource:
+    platform: h2
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update

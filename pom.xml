@@ -70,6 +70,14 @@
             <artifactId>camunda-template-engines-freemarker</artifactId>
             <version>${camunda.template-engine-freemarker.version}</version>
         </dependency><!-- freemarker template engine support for camunda -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency><!-- for ORM based data access -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId><!-- for lombok support -->
+        </dependency>
 
         <!-- unit test -->
         <dependency>
