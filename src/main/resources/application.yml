@@ -1,7 +1,16 @@
 camunda.bpm:
-  admin-user:
+  admin-user: # user-id, password, user-name for camunda web app
     id: demo
     password: demo
     firstName: Demo
   filter:
-    create: All tasks
+    create: All tasks # config that all tasks will be created
+
+spring:
+  quartz:
+    job-store-type: jdbc # store jobs in h2 database, change this to "memory" for in-memory storage
+    properties.org.quartz:
+      scheduler:
+        instanceId: AUTO
+      threadPool:
+        threadCount: 4
