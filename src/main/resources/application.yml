@@ -4,7 +4,7 @@ camunda.bpm:
     password: demo
     firstName: Demo
   filter:
-    create: All tasks # config that all tasks will be created
+    create: All tasks # the name for "show all" filter
 
 spring:
   quartz:
