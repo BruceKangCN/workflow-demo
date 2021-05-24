@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableProcessApplication // enable camunda process application
 public class WorkflowApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(WorkflowApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(WorkflowApplication.class, args);
+    }
 
 }
