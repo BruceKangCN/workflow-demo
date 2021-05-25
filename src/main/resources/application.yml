@@ -24,3 +24,10 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+logging:
+  file: log/workflow.log
+  level:
+    root: WARN
+    org.bkcloud.fleet.workflow: DEBUG
+    org.springframework.data.jpa: INFO
