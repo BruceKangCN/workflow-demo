@@ -222,7 +222,7 @@ public class QuartzConfiguration {
    CREATE TABLE city(
        id INT PRIMARY KEY AUTO_INCREMENT,
        name VARCHAR(255),
-       population INT
+       population BIGINT
    );
    ```
 3. 在资源目录下编写`data-h2.sql`
