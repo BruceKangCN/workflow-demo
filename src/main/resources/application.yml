@@ -7,6 +7,16 @@ camunda.bpm:
     create: All tasks # the name for "show all" filter
 
 spring:
+  quartz:
+    job-store-type: jdbc # store jobs in h2 database, change this to "memory" for in-memory storage
+    properties.org.quartz:
+      scheduler:
+        instanceId: AUTO
+      threadPool:
+        threadCount: 4
+  freemarker:
+    template-loader-path: classpath:/templates/
+    suffix: .ftlh
   datasource:
     platform: h2
   jpa:

@@ -88,7 +88,7 @@
 
 ### 配置调度器
 
-在资源目录下的`bootstrap.yml`中添加以下内容
+在资源目录下的`application.yml`中添加以下内容
 ```yaml
 spring:
   quartz:
@@ -192,7 +192,7 @@ public class QuartzConfiguration {
 
 ### 配置模板
 
-在资源目录下的`bootstrap.yml`中添加以下内容
+在资源目录下的`application.yml`中添加以下内容
 ```yaml
 # spring:
   freemarker:

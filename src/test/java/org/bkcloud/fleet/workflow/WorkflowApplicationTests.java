@@ -9,7 +9,7 @@ class WorkflowApplicationTests {
 
     @Test
     void contextLoads() {
-        Assertions.assertAll();
+        Assertions.assertAll(() -> {});
     }
 
 }
