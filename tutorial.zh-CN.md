@@ -1,6 +1,7 @@
 # 教程
 
-本篇教程将带你学习如何利用`Java`以及`camunda`、`quartz`、`freemarker`框架搭建基于**工作流引擎**和**代码生成器**的低代码CI/CD后端
+本篇教程将带你学习如何利用`Java`以及`camunda`、`quartz`、`freemarker`框架搭建基于**工作流引擎**和**代码生成器**的低代码CI/CD后端  
+本教程假设你已拥有基础的`Java`、`Spring Boot`、`Spring Data JPA`、`BPMN 2.0`相关知识
 
 ## 准备工作
 
