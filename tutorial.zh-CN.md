@@ -51,7 +51,7 @@
 
 ### 创建流程模型
 
-1. 打开`Camunda Modeler`，创建一个如下的流程模型
+1. 打开`Camunda Modeler`，创建一个如下的流程模型  
    ![loan approval](img/loanApproval.png)
    
    > 提示：如果你不熟悉如何创建流程模型，可以访问[该教程](https://docs.camunda.org/get-started/quick-start/service-task/)  
@@ -80,7 +80,7 @@
        }
    }
    ```
-5. 之后，重新启动应用，可以在 **All tasks** 过滤器下看到`loanApproval`被启动
+5. 之后，重新启动应用，可以在 **All tasks** 过滤器下看到`loanApproval`被启动  
    ![tasklist](img/tasklist.png)
 
 ## `quartz`作业调度器
@@ -466,5 +466,5 @@ public class QuartzConfiguration {
        </body>
    </html>
    ```
-4. 运行`main`方法，访问 [`/city/all`](http://localhost:8080/city/all) 查看效果
+4. 运行`main`方法，访问 [`/city/all`](http://localhost:8080/city/all) 查看效果  
 ![view](img/view.png)
