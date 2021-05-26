@@ -2,7 +2,6 @@ package org.bkcloud.fleet.workflow.controller;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.bkcloud.fleet.workflow.entity.City;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

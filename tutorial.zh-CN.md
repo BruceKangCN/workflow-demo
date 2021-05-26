@@ -81,6 +81,7 @@
         }
     }
     ```
+    `processPostDeploy`方法定义了流程实例被部署后要执行的代码
 5. 之后，重新启动应用，可以在 **All tasks** 过滤器下看到`loanApproval`被启动  
    ![tasklist](img/tasklist.png)
 
@@ -99,6 +100,7 @@ spring:
       threadPool:
         threadCount: 4
 ```
+`spring.quartz.job-store-type`指定了将作业存储进数据库
 
 ### 添加作业
 
@@ -117,6 +119,7 @@ public class Greet implements Job {
    }
 }
 ```
+`execute`方法定义了任务要执行的代码
 
 ### 配置作业、触发器
 
@@ -171,6 +174,186 @@ public class QuartzConfiguration {
 * 类路径：`<scriptTask scriptFormat="groovy" camunda:resource="classpath://org/camunda/bpm/task.groovy"/>`
 * 部署路径：`<scriptTask scriptFormat="groovy" camunda:resource="deployment://org/camunda/bpm/task.groovy"/>`
 
+### 编写模板引擎类
+
+在`<basePackage>.scriptEngine.FreemarkerScriptEngine`类中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.scriptEngine;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
+import org.camunda.templateengines.FreeMarkerCompiledScript;
+import org.springframework.stereotype.Component;
+
+import javax.script.*;
+import java.io.*;
+
+@Component
+public class FreemarkerScriptEngine extends AbstractScriptEngine implements Compilable {
+
+    private final ScriptEngineFactory factory;
+    private final Configuration configuration;
+
+    public FreemarkerScriptEngine(ScriptEngineFactory factory) {
+        this.factory = factory;
+        this.configuration = new Configuration(new Version(factory.getEngineVersion()));
+    }
+
+    @Override
+    public CompiledScript compile(String script) throws ScriptException {
+        return compile(new StringReader(script));
+    }
+
+    @Override
+    public CompiledScript compile(Reader script) throws ScriptException {
+        return new FreeMarkerCompiledScript(this, script, configuration);
+    }
+
+    @Override
+    public Object eval(String script, ScriptContext context) throws ScriptException {
+        return eval(new StringReader(script), context);
+    }
+
+    @Override
+    public Object eval(Reader reader, ScriptContext context) throws ScriptException {
+        String filename = (String) context.getAttribute(ScriptEngine.FILENAME);
+        Writer writer = new StringWriter();
+        Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);
+
+        try {
+            Template template = new Template(filename, reader, configuration);
+            template.process(bindings, writer);
+            writer.flush();
+        } catch (IOException | TemplateException e) {
+            throw new ScriptException(e);
+        }
+
+        return writer.toString();
+    }
+
+    @Override
+    public Bindings createBindings() {
+        return new SimpleBindings();
+    }
+
+    @Override
+    public ScriptEngineFactory getFactory() {
+        return this.factory;
+    }
+}
+```
+这个类将使用`FreemarkerScriptEngineFactory`创建并获取配置，`compile`方法定义了该类如何编译脚本，`eval`方法定义了该类如何将模板渲染成字符串
+
+### 编写模板引擎工厂
+
+在`<basePackage>.scriptEngine.factory.FreemarkerScriptEngineFactory`类中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.scriptEngine.factory;
+
+import org.bkcloud.fleet.workflow.scriptEngine.FreemarkerScriptEngine;
+import org.springframework.stereotype.Component;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+@Component
+public class FreemarkerScriptEngineFactory implements ScriptEngineFactory {
+
+    public final static String NAME = "freemarker";
+    public final static String VERSION = "2.3.29";
+    public final static List<String> names;
+    public final static List<String> extensions;
+    public final static List<String> mimeTypes;
+
+    static {
+        names = Collections.unmodifiableList(Arrays.asList(NAME, "Freemarker", "FreeMarker"));
+        extensions = Collections.singletonList("ftl");
+        mimeTypes = Collections.emptyList();
+    }
+
+    @Override
+    public String getEngineName() {
+        return NAME;
+    }
+
+    @Override
+    public String getEngineVersion() {
+        return VERSION;
+    }
+
+    @Override
+    public List<String> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public List<String> getMimeTypes() {
+        return mimeTypes;
+    }
+
+    @Override
+    public List<String> getNames() {
+        return names;
+    }
+
+    @Override
+    public String getLanguageName() {
+        return NAME;
+    }
+
+    @Override
+    public String getLanguageVersion() {
+        return VERSION;
+    }
+
+    @Override
+    public Object getParameter(String key) {
+        switch (key) {
+            case ScriptEngine.NAME:
+            case ScriptEngine.LANGUAGE:
+                return getLanguageName();
+            case ScriptEngine.ENGINE:
+                return getEngineName();
+            case ScriptEngine.ENGINE_VERSION:
+                return getEngineVersion();
+            case ScriptEngine.LANGUAGE_VERSION:
+                return getLanguageVersion();
+            case "THREADING":
+                return "MULTITHREADED";
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public String getMethodCallSyntax(String obj, String m, String... args) {
+        String params = args == null ? "" : String.join(", ", args);
+        return "${" + obj + "." + m + "(" + params + ")}";
+    }
+
+    @Override
+    public String getOutputStatement(String toDisplay) {
+        return toDisplay;
+    }
+
+    @Override
+    public String getProgram(String... statements) {
+        return statements == null ? null : String.join("\n", statements);
+    }
+
+    @Override
+    public ScriptEngine getScriptEngine() {
+        return new FreemarkerScriptEngine(this);
+    }
+}
+```
+该类定义了一些工厂的元信息，以及通过`getScriptEngine`获取`FreemarkerScriptEngine`的方法
+
 ### 编写模板
 
 以下例子展示了如何编写`freemarker`模板，并将结果存储到`text`变量中
@@ -197,275 +380,6 @@ public class QuartzConfiguration {
 # spring:
   freemarker:
     template-loader-path: classpath:/templates/
-    suffix: .ftlh
+    suffix: .ftl
 ```
-这将会使`freemarker`从`classpath:/templates/`下加载后缀为`ftlh`的模板文件
-
-### 使用`freemarker`
-
-#### 准备数据库
-
-1. 在资源目录下的`application.yml`中添加以下内容
-    ```yaml
-    spring:
-        datasource:
-        platform: h2
-        jpa:
-        database-platform: org.hibernate.dialect.H2Dialect
-        show-sql: true
-        hibernate:
-            ddl-auto: update
-    ```
-   这将会使`spring`寻找并执行资源目录下的`schema-h2.sql`和`data-h2.sql`
-2. 在资源目录下编写`schema-h2.sql`
-    ```sql
-    CREATE TABLE city(
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        name VARCHAR(255),
-        population BIGINT
-    );
-    ```
-3. 在资源目录下编写`data-h2.sql`
-    ```sql
-    INSERT INTO city(name, population) VALUES('Bratislava', 432000);
-    INSERT INTO city(name, population) VALUES('Budapest', 1759000);
-    INSERT INTO city(name, population) VALUES('Prague', 1280000);
-    INSERT INTO city(name, population) VALUES('Warsaw', 1748000);
-    INSERT INTO city(name, population) VALUES('Los Angeles', 3971000);
-    INSERT INTO city(name, population) VALUES('New York', 8550000);
-    INSERT INTO city(name, population) VALUES('Edinburgh', 464000);
-    INSERT INTO city(name, population) VALUES('Berlin', 3671000);
-    ```
-4. 编写`POJO`类`<basePackage>.entity.City`
-    ```java
-    package org.bkcloud.fleet.workflow.entity;
-    
-    import lombok.AllArgsConstructor;
-    import lombok.Data;
-    import lombok.NoArgsConstructor;
-    
-    import javax.persistence.*;
-    
-    @Entity
-    @Table(name = "city")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class City {
-    
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Integer id;
-        @Column(name = "name")
-        private String name;
-        @Column(name = "population")
-        private Long population;
-    
-    }
-    ```
-5. 编写`JpaRepository`接口`<basePackage>.repository.ICityRepository`
-    ```java
-    package org.bkcloud.fleet.workflow.repository;
-    
-    import org.bkcloud.fleet.workflow.entity.City;
-    import org.springframework.data.domain.Example;
-    import org.springframework.data.domain.Page;
-    import org.springframework.data.domain.Pageable;
-    import org.springframework.data.domain.Sort;
-    import org.springframework.data.jpa.repository.JpaRepository;
-    import org.springframework.stereotype.Repository;
-    
-    import java.util.List;
-    import java.util.Optional;
-    
-    @Repository
-    public interface ICityRepository extends JpaRepository<City, Integer> {
-        @Override
-        List<City> findAll();
-    
-        @Override
-        List<City> findAll(Sort sort);
-    
-        @Override
-        Page<City> findAll(Pageable pageable);
-    
-        @Override
-        List<City> findAllById(Iterable<Integer> iterable);
-    
-        @Override
-        long count();
-    
-        @Override
-        void deleteById(Integer integer);
-    
-        @Override
-        void delete(City city);
-    
-        @Override
-        void deleteAll(Iterable<? extends City> iterable);
-    
-        @Override
-        void deleteAll();
-    
-        @Override
-        <S extends City> S save(S s);
-    
-        @Override
-        <S extends City> List<S> saveAll(Iterable<S> iterable);
-    
-        @Override
-        Optional<City> findById(Integer integer);
-    
-        @Override
-        boolean existsById(Integer integer);
-    
-        @Override
-        void flush();
-    
-        @Override
-        <S extends City> S saveAndFlush(S s);
-    
-        @Override
-        void deleteInBatch(Iterable<City> iterable);
-    
-        @Override
-        void deleteAllInBatch();
-    
-        @Override
-        City getOne(Integer integer);
-    
-        @Override
-        <S extends City> Optional<S> findOne(Example<S> example);
-    
-        @Override
-        <S extends City> List<S> findAll(Example<S> example);
-    
-        @Override
-        <S extends City> List<S> findAll(Example<S> example, Sort sort);
-    
-        @Override
-        <S extends City> Page<S> findAll(Example<S> example, Pageable pageable);
-    
-        @Override
-        <S extends City> long count(Example<S> example);
-    
-        @Override
-        <S extends City> boolean exists(Example<S> example);
-    }
-    ```
-
-#### 准备服务
-
-1. 编写`<basePackage>.service.ICityService`服务接口
-    ```java
-    package org.bkcloud.fleet.workflow.service;
-    
-    import org.bkcloud.fleet.workflow.entity.City;
-    
-    import java.util.List;
-    
-    public interface ICityService {
-    
-        List<City> findAll();
-    
-    }
-    ```
-2. 编写`<basePackage>.service.impl.CityServiceImpl`服务实现类
-    ```java
-    package org.bkcloud.fleet.workflow.service.impl;
-    
-    import org.bkcloud.fleet.workflow.entity.City;
-    import org.bkcloud.fleet.workflow.repository.ICityRepository;
-    import org.bkcloud.fleet.workflow.service.ICityService;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.stereotype.Service;
-    
-    import java.util.List;
-    
-    @Service
-    public class CityServiceImpl implements ICityService {
-    
-        @Autowired
-        private ICityRepository cityRepository;
-    
-        @Override
-        public List<City> findAll() {
-            return cityRepository.findAll();
-        }
-    }
-    ```
-
-#### 展示页面
-
-1. 编写`<basePackage>.controller.CityController`控制器
-    ```java
-    package org.bkcloud.fleet.workflow.controller;
-    
-    import org.bkcloud.fleet.workflow.entity.City;
-    import org.bkcloud.fleet.workflow.service.ICityService;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.web.bind.annotation.GetMapping;
-    import org.springframework.web.bind.annotation.RequestMapping;
-    import org.springframework.web.bind.annotation.RestController;
-    import org.springframework.web.servlet.ModelAndView;
-    
-    import java.util.HashMap;
-    import java.util.List;
-    
-    @RestController
-    @RequestMapping("/city")
-    public class CityController {
-    
-        @Autowired
-        private ICityService cityService;
-    
-        @GetMapping("/all")
-        public ModelAndView displayCities() {
-            List<City> cities = cityService.findAll();
-            HashMap<String, List<City>> map = new HashMap<>();
-            map.put("cities", cities);
-            return new ModelAndView("showCities", map);
-        }
-    }
-    ```
-2. 在资源目录下编写`static/css/style.css`
-    ```css
-    h2 {
-        color: blue;
-    }
-    
-    td:nth-child(3) {
-        text-align: right;
-    }
-    ```
-3. 在资源目录下编写`templates/showCities.ftlh`
-    ```html
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>Cities</title>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="/css/style.css">
-            </head>
-        <body>
-            <h2>List of cities</h2>
-            <table>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Population</th>
-                </tr>
-                <#list cities as city>
-                    <tr>
-                        <td>${city.id}</td>
-                        <td>${city.name}</td>
-                        <td>${city.population}</td>
-                    </tr>
-                </#list>
-            </table>
-        </body>
-    </html>
-    ```
-4. 运行`main`方法，访问 [`/city/all`](http://localhost:8080/city/all) 查看效果  
-![view](img/view.png)
+这将会使`freemarker`从`classpath:/templates/`下加载后缀为`ftl`的模板文件
