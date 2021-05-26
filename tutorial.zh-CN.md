@@ -1,11 +1,11 @@
 # 教程
 
 本篇教程将带你学习如何利用`Java`以及`camunda`、`quartz`、`freemarker`框架搭建基于**工作流引擎**和**代码生成器**的低代码CI/CD后端  
-本教程假设你已拥有基础的`Java`、`Spring Boot`、`Spring Data JPA`、`BPMN 2.0`相关知识
+本教程假设你已拥有基础的`Java`、`Spring Boot`、`BPMN 2.0`相关知识
 
 ## 准备工作
 
-1. 进入 [srping initializr](https://start.spring.io) 创建`maven`项目，**语言**选择`Java`，**Spring Boot** 版本选择`2.3.x`，设定项目元信息，**打包方式**选择`jar`，**Java** 版本选择`8`，添加`H2 Database`、`Quartz Scheduler`、`Apache Freemarker`、`Spring Data Jpa`、`Lombok`依赖，点击`GENERATE`生成项目并下载到本地
+1. 进入 [srping initializr](https://start.spring.io) 创建`maven`项目，**语言**选择`Java`，**Spring Boot** 版本选择`2.3.x`，设定项目元信息，**打包方式**选择`jar`，**Java** 版本选择`8`，添加`H2 Database`、`Quartz Scheduler`、`Apache Freemarker`、`Lombok`依赖，点击`GENERATE`生成项目并下载到本地
 2. 使用IDE打开项目，在`pom.xml`中手动添加`camunda`依赖
     ```xml
     <!-- 在properties标签内添加以下内容 -->
@@ -26,6 +26,12 @@
         <groupId>org.camunda.template-engines</groupId>
         <artifactId>camunda-template-engines-freemarker</artifactId>
         <version>${camunda.template-engine-freemarker.version}</version>
+    </dependency>
+        <dependency>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy-all</artifactId>
+        <version>3.0.8</version>
+        <type>pom</type>
     </dependency>
     ```
 3. 下载依赖并构建，测试是否可运行
@@ -59,7 +65,7 @@
    
 2. 将该流程模型保存为资源目录下的`processes/loanApproval.bpmn`
 3. 在主类上添加`@EnableProcessApplication`注解，这将创建流程应用
-4. 在`<basePackage>.process.LoanApproval`类中添加以下代码，这将使`loanApproval`流程实例被部署后自动执行
+4. 在`<basePackage>.process.LoanApprovalProcess`类中添加以下代码，这将使`loanApproval`流程实例被部署后自动执行
     ```java
     package org.bkcloud.fleet.workflow.process;
     
@@ -70,7 +76,7 @@
     import org.springframework.stereotype.Component;
     
     @Component
-    public class LoanApproval {
+    public class LoanApprovalProcess {
     
         @Autowired
         private RuntimeService runtimeService;
@@ -180,6 +186,7 @@ public class QuartzConfiguration {
 ```java
 package org.bkcloud.fleet.workflow.scriptEngine;
 
+import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -198,7 +205,9 @@ public class FreemarkerScriptEngine extends AbstractScriptEngine implements Comp
 
     public FreemarkerScriptEngine(ScriptEngineFactory factory) {
         this.factory = factory;
-        this.configuration = new Configuration(new Version(factory.getEngineVersion()));
+        this.configuration = new Configuration(Configuration.VERSION_2_3_31);
+        ClassTemplateLoader loader = new ClassTemplateLoader(FreemarkerScriptEngine.class, "/templates/");
+        configuration.setTemplateLoader(loader);
     }
 
     @Override
@@ -241,6 +250,10 @@ public class FreemarkerScriptEngine extends AbstractScriptEngine implements Comp
     @Override
     public ScriptEngineFactory getFactory() {
         return this.factory;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }
 ```
@@ -356,20 +369,24 @@ public class FreemarkerScriptEngineFactory implements ScriptEngineFactory {
 
 ### 编写模板
 
-以下例子展示了如何编写`freemarker`模板，并将结果存储到`text`变量中
+在资源目录下的`templates/runScript.ftl`中添加以下内容
 ```xml
-<scriptTask id="templateScript" scriptFormat="freemarker" camunda:resultVariable="text">
-  <script>
-    <![CDATA[
-    Dear ${customer},
-
-    thank you for working with Camunda Platform ${version}.
-
-    Greetings,
-    Camunda Developers
-    ]]>
-  </script>
-</scriptTask>
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" targetNamespace="http://camunda.org/example">
+  <process id="runScript" isExecutable="true">
+    <startEvent id="start"/>
+    <sequenceFlow id="sequenceFlow1" sourceRef="start" targetRef="task"/>
+    <scriptTask id="task" name="Groovy Script" scriptFormat="groovy">
+      <script>
+        <![CDATA[
+        ${source}
+        ]]>
+      </script>
+    </scriptTask>
+    <sequenceFlow id="sequenceFlow2" sourceRef="task" targetRef="end"/>
+    <endEvent id="end"/>
+  </process>
+</definitions>
 ```
 > 在`xml`文档中，使用`CDATA`区段可以防止中间的文本被解析，方便编写代码
 
@@ -383,3 +400,221 @@ public class FreemarkerScriptEngineFactory implements ScriptEngineFactory {
     suffix: .ftl
 ```
 这将会使`freemarker`从`classpath:/templates/`下加载后缀为`ftl`的模板文件
+
+## `camunda`整合`freemarker`
+
+### 创建流程类
+
+在`<basePackage>.process.RunScriptProcess`类中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.process;
+
+import org.bkcloud.fleet.workflow.scriptEngine.FreemarkerScriptEngine;
+import org.bkcloud.fleet.workflow.scriptEngine.factory.FreemarkerScriptEngineFactory;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.repository.DeploymentBuilder;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.script.Bindings;
+import javax.script.ScriptException;
+import java.io.IOException;
+
+@Component
+public class RunScriptProcess {
+
+    @Autowired
+    private RepositoryService repositoryService;
+
+    @Autowired
+    private RuntimeService runtimeService;
+
+    public DeploymentBuilder create(String source) throws IOException, ScriptException {
+        FreemarkerScriptEngine scriptEngine = (FreemarkerScriptEngine) new FreemarkerScriptEngineFactory().getScriptEngine();
+
+        String template = scriptEngine.getConfiguration().getTemplate("runScript.ftl").toString();
+        Bindings bindings = scriptEngine.createBindings();
+        bindings.put("source", source);
+        String content = (String) scriptEngine.eval(template, bindings);
+
+        return repositoryService.createDeployment().addString("runScript.bpmn", content);
+    }
+
+    public void deploy(DeploymentBuilder deploymentBuilder) {
+        deploymentBuilder.deploy();
+    }
+
+    public ProcessInstance start() {
+        return runtimeService.startProcessInstanceByKey("runScript");
+    }
+}
+```
+该类以`create`方法创建流程，`deploy`方法部署流程，`start`方法启动流程实例
+
+### 创建流程实例POJO类
+
+在`<basePackage>.process.instance.RunScriptProcessInstance`类中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.process.instance;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RunScriptProcessInstance {
+
+    private UUID id;
+    private String source;
+
+}
+```
+为了方便起见，该类目前只提供了`id`、`source`两个字段，对于更复杂的实例，可以考虑添加返回值、变量、标准输出、标准错误等字段
+
+### 创建流程服务接口
+
+在`<basePackage>.service.IProcessService`接口中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.service;
+
+import org.camunda.bpm.engine.repository.DeploymentBuilder;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+
+import javax.script.ScriptException;
+import java.io.IOException;
+
+public interface IProcessService {
+
+    DeploymentBuilder create(String source) throws ScriptException, IOException;
+    void deploy(DeploymentBuilder builder);
+    ProcessInstance start();
+}
+```
+该接口定义了流程服务应具备的功能
+
+### 创建流程服务实现类
+
+在`<basePackage>.service.impl.RunScriptServiceImpl`类中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.service.impl;
+
+import org.bkcloud.fleet.workflow.process.RunScriptProcess;
+import org.bkcloud.fleet.workflow.service.IProcessService;
+import org.camunda.bpm.engine.repository.DeploymentBuilder;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import javax.script.ScriptException;
+import java.io.IOException;
+
+@Service
+@Qualifier("RunScriptProcessService")
+public class RunScriptProcessServiceImpl implements IProcessService {
+
+    @Autowired
+    private RunScriptProcess runScriptProcess;
+
+    @Override
+    public DeploymentBuilder create(String source) throws ScriptException, IOException {
+        return runScriptProcess.create(source);
+    }
+
+    @Override
+    public void deploy(DeploymentBuilder builder) {
+        runScriptProcess.deploy(builder);
+    }
+
+    @Override
+    public ProcessInstance start() {
+        return runScriptProcess.start();
+    }
+}
+```
+该类定义了脚本流程服务的实现方式
+> 为了防止接口同名导致注入失败，可以在实现类和注入处上添加注解`@Qualifier("name")`
+
+### 创建脚本流程控制器
+
+在`<basePackage>.controller.RunScriptProcessController`类中添加以下代码
+```java
+package org.bkcloud.fleet.workflow.controller;
+
+import org.bkcloud.fleet.workflow.process.instance.RunScriptProcessInstance;
+import org.bkcloud.fleet.workflow.service.IProcessService;
+import org.camunda.bpm.engine.repository.DeploymentBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.script.ScriptException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/run-script")
+public class RunScriptProcessController {
+
+    @Autowired
+    @Qualifier("RunScriptProcessService")
+    private IProcessService runScriptProcessService;
+
+    private static final Map<UUID, DeploymentBuilder> map;
+
+    static {
+        map = new HashMap<>();
+    }
+
+    @PostMapping("/create")
+    public RunScriptProcessInstance create(@RequestBody RunScriptProcessInstance instance) throws ScriptException, IOException {
+        UUID uuid = UUID.randomUUID();
+        DeploymentBuilder builder = runScriptProcessService.create(instance.getSource());
+        map.put(uuid, builder);
+        instance.setId(uuid);
+        return instance;
+    }
+
+    @PostMapping("/deploy")
+    public void deploy(@RequestBody RunScriptProcessInstance instance) {
+        runScriptProcessService.deploy(map.get(instance.getId()));
+    }
+
+    @PostMapping("/start")
+    public void start() {
+        runScriptProcessService.start();
+    }
+}
+```
+该类在`/run-script`路径下定义了3个使用 **`POST`** 方法的API，它们均使用`JSON`进行数据传输：
+* `/create`：从`source`参数获取要执行的`groovy`脚本，以它为模板渲染出流程并存入`map`，之后反回流程的UUID
+    > 安全起见，可以预定义脚本类型，从前端获取类型而不是源码，再以类型在后端获取对应源码并渲染，避免远程执行任意代码漏洞
+* `/deploy`：从`id`获取流程的UUID，之后部署对应`id`的流程
+* `/start`：启动一个流程实例
+    > 为了执行更复杂的脚本，可以在脚本中定义需要传入的参数，并从该接口获取对应参数，以实现定制流程实例
+
+### 测试API
+
+1. 向`/run-script/create`发送 **`POST`** 请求，`request body`如下
+    ```json
+    {"source": "println 'hello'"}
+    ```
+2. 将第一步返回的`id`作为此步骤的参数，向`/run-script/deploy`发送 **`POST`** 请求，`request body`如下
+    ```json
+    {"id": "8112966c-e13f-47cb-ac70-7b91c712af88"}
+    ```
+3. 向`/run-script/start`发送 **`POST`** 请求，此时可以看到控制台新增如下输出
+    ```
+    hello
+    ```

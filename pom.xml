@@ -53,6 +53,12 @@
             <artifactId>jaxb-impl</artifactId>
             <version>2.2.3</version>
         </dependency><!-- what the hell is this for??? -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>3.0.8</version>
+            <type>pom</type>
+        </dependency><!-- for running groovy script -->
 
         <!-- quartz -->
         <dependency>

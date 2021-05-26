@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * a loan approval process
  */
 @Component
-public class LoanApproval {
+public class LoanApprovalProcess {
 
     @Autowired
     private RuntimeService runtimeService; // camunda runtime service
