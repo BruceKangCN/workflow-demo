@@ -4,6 +4,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.Version;
 import org.camunda.templateengines.FreeMarkerCompiledScript;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +22,7 @@ public class FreemarkerScriptEngine extends AbstractScriptEngine implements Comp
 
     public FreemarkerScriptEngine(ScriptEngineFactory factory) {
         this.factory = factory;
-        this.configuration = new Configuration(Configuration.VERSION_2_3_31);
+        this.configuration = new Configuration(new Version(factory.getEngineVersion()));
         ClassTemplateLoader loader = new ClassTemplateLoader(FreemarkerScriptEngine.class, "/templates/");
         configuration.setTemplateLoader(loader);
     }

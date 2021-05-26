@@ -16,7 +16,7 @@ import java.util.List;
 public class FreemarkerScriptEngineFactory implements ScriptEngineFactory {
 
     public final static String NAME = "freemarker";
-    public final static String VERSION = "2.3.29";
+    public final static String VERSION = "2.3.31";
     public final static List<String> names;
     public final static List<String> extensions;
     public final static List<String> mimeTypes;
