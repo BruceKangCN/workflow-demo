@@ -16,7 +16,7 @@ spring:
         threadCount: 4
   freemarker:
     template-loader-path: classpath:/templates/
-    suffix: .ftlh
+    suffix: .ftl
   datasource:
     platform: h2
   jpa:
@@ -26,7 +26,7 @@ spring:
       ddl-auto: update
 
 logging:
-  file: log/workflow.log
+  file: log/${spring.application.name}.log
   level:
     root: WARN
     org.bkcloud.fleet.workflow: DEBUG

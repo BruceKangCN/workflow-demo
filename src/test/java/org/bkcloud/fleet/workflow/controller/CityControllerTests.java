@@ -26,8 +26,8 @@ public class CityControllerTests {
     private final Writer writer = new PrintWriter(System.out);
 
     @Test
-    public void canRender() throws IOException, TemplateException {
-        Template template = configuration.getTemplate("displayCities.ftlh");
+    public void canProcessTemplate() throws IOException {
+        Template template = configuration.getTemplate("displayCities.ftl");
 
         List<City> cities = new ArrayList<>();
         cities.add(new City(1, "Beijing", 21540000L));
