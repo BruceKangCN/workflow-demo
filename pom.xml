@@ -12,7 +12,7 @@
     <artifactId>workflow</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>workflow</name>
-    <description>a workflow application based on activiti and spring-boot</description>
+    <description>a workflow application based on camunda, quartz, freemarker and spring-boot</description>
 
     <properties>
         <java.version>1.8</java.version>

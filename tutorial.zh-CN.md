@@ -5,7 +5,8 @@
 
 ## 准备工作
 
-1. 进入 [srping initializr](https://start.spring.io) 创建`maven`项目，**语言**选择`Java`，**Spring Boot** 版本选择`2.3.x`，设定项目元信息，**打包方式**选择`jar`，**Java** 版本选择`8`，添加`H2 Database`、`Quartz Scheduler`、`Apache Freemarker`、`Lombok`依赖，点击`GENERATE`生成项目并下载到本地
+1. 进入 [srping initializr](https://start.spring.io) 创建`maven`项目，**语言**选择`Java`，**Spring Boot** 版本选择`2.3.x`，设定项目元信息，**打包方式**选择`jar`，**Java** 版本选择`8`，添加`H2 Database`、`Quartz Scheduler`、`Apache Freemarker`、`Lombok`依赖，点击`GENERATE`生成项目并下载到本地  
+    ![spring initiallizr](img/spring%20initializr.png)
 2. 使用IDE打开项目，在`pom.xml`中手动添加`camunda`依赖
     ```xml
     <!-- 在properties标签内添加以下内容 -->
