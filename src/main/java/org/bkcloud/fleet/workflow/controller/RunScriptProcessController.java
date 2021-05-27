@@ -1,5 +1,6 @@
 package org.bkcloud.fleet.workflow.controller;
 
+import org.bkcloud.fleet.workflow.dto.RunScriptProcessInstanceDto;
 import org.bkcloud.fleet.workflow.process.instance.RunScriptProcessInstance;
 import org.bkcloud.fleet.workflow.service.IProcessService;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
@@ -40,14 +41,15 @@ public class RunScriptProcessController {
      * @param instance request body with the source code of the script
      * @throws ScriptException exception while evaluate the script source code
      * @throws IOException exception while reading the template
+     * @return created process instance wrapped with DTO
      */
     @PostMapping("/create")
-    public RunScriptProcessInstance create(@RequestBody RunScriptProcessInstance instance) throws ScriptException, IOException {
+    public RunScriptProcessInstanceDto create(@RequestBody RunScriptProcessInstance instance) throws ScriptException, IOException {
         UUID uuid = UUID.randomUUID();
         DeploymentBuilder builder = runScriptProcessService.create(instance.getSource());
         map.put(uuid, builder);
         instance.setId(uuid);
-        return instance;
+        return new RunScriptProcessInstanceDto(0, "success", instance);
     }
 
     /**

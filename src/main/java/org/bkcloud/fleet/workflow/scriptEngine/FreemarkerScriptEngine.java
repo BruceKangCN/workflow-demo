@@ -76,6 +76,6 @@ public class FreemarkerScriptEngine extends AbstractScriptEngine implements Comp
     }
 
     public Configuration getConfiguration() {
-        return configuration;
+        return this.configuration;
     }
 }
