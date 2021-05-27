@@ -54,7 +54,7 @@ create a run script process
 
 #### Response
 
-`{"code": number, "msg": string. "data": {"id": string, "source": string}}`: a JSON object with the UUID of created process and the source code of the script wrapped in a `DTO`
+`{"code": number, "msg": string, "data": {"id": string, "source": string}}`: a JSON object with the UUID of created process and the source code of the script wrapped in a `DTO`
 
 ### **`POST`** `/run-script/deploy`
 
