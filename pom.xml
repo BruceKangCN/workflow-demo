@@ -49,11 +49,6 @@
             <scope>runtime</scope>
         </dependency><!-- in-memory database -->
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.2.3</version>
-        </dependency><!-- what the hell is this for??? -->
-        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>3.0.8</version>
@@ -82,8 +77,8 @@
         </dependency><!-- for ORM based data access -->
         <dependency>
             <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId><!-- for lombok support -->
-        </dependency>
+            <artifactId>lombok</artifactId>
+        </dependency><!-- for lombok support -->
 
         <!-- unit test -->
         <dependency>

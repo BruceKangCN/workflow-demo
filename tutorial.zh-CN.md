@@ -19,11 +19,6 @@
         <version>${camunda.spring-boot.version}</version>
     </dependency>
     <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>2.2.3</version>
-    </dependency>
-    <dependency>
         <groupId>org.camunda.template-engines</groupId>
         <artifactId>camunda-template-engines-freemarker</artifactId>
         <version>${camunda.template-engine-freemarker.version}</version>

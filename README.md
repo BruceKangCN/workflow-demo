@@ -85,6 +85,10 @@ start a run script process instance
 
 This demo is powered by the frameworks below, sorted by license type
 
+### MIT
+
+* lombok
+
 ### Apache 2.0
 
 * spring-boot
@@ -96,7 +100,3 @@ This demo is powered by the frameworks below, sorted by license type
 ### MPL 2.0
 
 * h2
-
-### Eclipse Public License - v 2.0
-
-* junit5
