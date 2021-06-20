@@ -59,12 +59,6 @@
             <scope>runtime</scope>
         </dependency><!-- in-memory database -->
 
-        <!-- quartz -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-quartz</artifactId>
-        </dependency>
-
         <!-- unit test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
