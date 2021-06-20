@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 
 /**
- * handler for loanGranter service task
+ * handler for requestRejecter service task
  */
 @Component
-@ExternalTaskSubscription("loanGranter")
-public class GrantLoanHandler implements ExternalTaskHandler {
+@ExternalTaskSubscription("requestRejecter")
+public class RequestRejecterHandler implements ExternalTaskHandler {
     @Override
     public void execute(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         String customID = externalTask.getVariable("customID");
@@ -21,7 +21,7 @@ public class GrantLoanHandler implements ExternalTaskHandler {
 
         externalTaskService.complete(externalTask);
 
-        String msg = MessageFormat.format("loan granted for custom {0} with score {1}", customID, creditScore);
+        String msg = MessageFormat.format("request rejected for custom {0} with score {1}", customID, creditScore);
         System.out.println(msg);
     }
 }

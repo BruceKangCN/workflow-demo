@@ -126,10 +126,10 @@ public class Greet implements Job {
 ### 配置作业、触发器
 
 在`<basePackage>.config.QuartzConfiguration`类中添加以下代码
+
 ```java
 package org.bkcloud.fleet.workflow.config;
 
-import org.bkcloud.fleet.workflow.job.Greet;
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -137,17 +137,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class QuartzConfiguration {
 
-   @Bean
-   public JobDetail jobDetail() {
-      return JobBuilder.newJob(Greet.class).withIdentity("demo job").storeDurably().build();
-   }
+    @Bean
+    public JobDetail jobDetail() {
+        return JobBuilder.newJob(Greet.class).withIdentity("demo job").storeDurably().build();
+    }
 
-   @Bean
-   public Trigger jobTrigger(JobDetail jobDetail) {
-      return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity("demo trigger")
-              .withSchedule(CronScheduleBuilder.cronSchedule("0/10 * * ? * * *"))
-              .build();
-   }
+    @Bean
+    public Trigger jobTrigger(JobDetail jobDetail) {
+        return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity("demo trigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule("0/10 * * ? * * *"))
+                .build();
+    }
 }
 ```
 `jobDetail`将为`Greet`作业配置详细的设定，之后`jobTrigger`将以`jobDetail`中的配置配置触发器，并以**Cron表达式**指定该触发器每10秒触发一次
@@ -497,11 +497,10 @@ public interface IProcessService {
 ### 创建流程服务实现类
 
 在`<basePackage>.service.impl.RunScriptServiceImpl`类中添加以下代码
+
 ```java
 package org.bkcloud.fleet.workflow.service.impl;
 
-import org.bkcloud.fleet.workflow.process.RunScriptProcess;
-import org.bkcloud.fleet.workflow.service.IProcessService;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -515,23 +514,23 @@ import java.io.IOException;
 @Qualifier("RunScriptProcessService")
 public class RunScriptProcessServiceImpl implements IProcessService {
 
-    @Autowired
-    private RunScriptProcess runScriptProcess;
+   @Autowired
+   private RunScriptProcess runScriptProcess;
 
-    @Override
-    public DeploymentBuilder create(String source) throws ScriptException, IOException {
-        return runScriptProcess.create(source);
-    }
+   @Override
+   public DeploymentBuilder create(String source) throws ScriptException, IOException {
+      return runScriptProcess.create(source);
+   }
 
-    @Override
-    public void deploy(DeploymentBuilder builder) {
-        runScriptProcess.deploy(builder);
-    }
+   @Override
+   public void deploy(DeploymentBuilder builder) {
+      runScriptProcess.deploy(builder);
+   }
 
-    @Override
-    public ProcessInstance start() {
-        return runScriptProcess.start();
-    }
+   @Override
+   public ProcessInstance start() {
+      return runScriptProcess.start();
+   }
 }
 ```
 该类定义了脚本流程服务的实现方式
@@ -540,11 +539,11 @@ public class RunScriptProcessServiceImpl implements IProcessService {
 ### 创建脚本流程控制器
 
 在`<basePackage>.controller.RunScriptProcessController`类中添加以下代码
+
 ```java
 package org.bkcloud.fleet.workflow.controller;
 
 import org.bkcloud.fleet.workflow.process.instance.RunScriptProcessInstance;
-import org.bkcloud.fleet.workflow.service.IProcessService;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -563,34 +562,34 @@ import java.util.UUID;
 @RequestMapping("/run-script")
 public class RunScriptProcessController {
 
-    @Autowired
-    @Qualifier("RunScriptProcessService")
-    private IProcessService runScriptProcessService;
+   @Autowired
+   @Qualifier("RunScriptProcessService")
+   private IProcessService runScriptProcessService;
 
-    private static final Map<UUID, DeploymentBuilder> map;
+   private static final Map<UUID, DeploymentBuilder> map;
 
-    static {
-        map = new HashMap<>();
-    }
+   static {
+      map = new HashMap<>();
+   }
 
-    @PostMapping("/create")
-    public RunScriptProcessInstance create(@RequestBody RunScriptProcessInstance instance) throws ScriptException, IOException {
-        UUID uuid = UUID.randomUUID();
-        DeploymentBuilder builder = runScriptProcessService.create(instance.getSource());
-        map.put(uuid, builder);
-        instance.setId(uuid);
-        return instance;
-    }
+   @PostMapping("/create")
+   public RunScriptProcessInstance create(@RequestBody RunScriptProcessInstance instance) throws ScriptException, IOException {
+      UUID uuid = UUID.randomUUID();
+      DeploymentBuilder builder = runScriptProcessService.create(instance.getSource());
+      map.put(uuid, builder);
+      instance.setId(uuid);
+      return instance;
+   }
 
-    @PostMapping("/deploy")
-    public void deploy(@RequestBody RunScriptProcessInstance instance) {
-        runScriptProcessService.deploy(map.get(instance.getId()));
-    }
+   @PostMapping("/deploy")
+   public void deploy(@RequestBody RunScriptProcessInstance instance) {
+      runScriptProcessService.deploy(map.get(instance.getId()));
+   }
 
-    @PostMapping("/start")
-    public void start() {
-        runScriptProcessService.start();
-    }
+   @PostMapping("/start")
+   public void start() {
+      runScriptProcessService.start();
+   }
 }
 ```
 该类在`/run-script`路径下定义了3个使用 **`POST`** 方法的API，它们均使用`JSON`进行数据传输：

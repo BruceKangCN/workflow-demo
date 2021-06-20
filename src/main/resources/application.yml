@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 camunda.bpm:
   admin-user: # user-id, password, user-name for camunda web app
     id: demo
@@ -24,20 +27,11 @@ spring:
         instanceId: AUTO
       threadPool:
         threadCount: 4
-  freemarker:
-    template-loader-path: classpath:/templates/
-    suffix: .ftl
   datasource:
     platform: h2
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
-    hibernate:
-      ddl-auto: update
 
 logging:
   file: log/${spring.application.name}.log
   level:
     root: WARN
     org.bkcloud.fleet.workflow: DEBUG
-    org.springframework.data.jpa: INFO
