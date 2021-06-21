@@ -273,3 +273,10 @@ curl http://localhost:8080/engine-rest/process-definition/key/loan_process/start
 3. 之后，重新启动项目，登录 **Web App**， 进入**Tasklist**，可以在 **All tasks** 过滤器下看到 `loanApproval` 被启动  
    ![tasklist](img/tasklist.png)
 4. 点击 **Loan Approval** 任务，点击右侧的 **claim** 按钮，之后便可以对该用户任务做出决策，最终点击 **complete** 按钮完成用户任务
+
+## 微服务
+
+若要把该项目转化为微服务，需要创建2个模块：
+
+* `workflow`: 仅包含启动类，引入 `camunda-bpm-spring-boot-starter-webapp` 和 `camunda-bpm-spring-boot-starter-rest` 依赖，负责提供 **Web App** 以及 `REST API`
+* `task`: 包含启动类和其他用于处理工作流的类，引入 `camunda-bpm-spring-boot-starter-external-task-client` 依赖，启动类无需添加 `@EnableProcessApplication` 注解，负责处理服务任务等其他内容
