@@ -11,23 +11,11 @@
     ```xml
     <!-- 在properties标签内添加以下内容 -->
     <camunda.spring-boot.version>7.15.0</camunda.spring-boot.version>
-    <camunda.template-engine-freemarker.version>2.0.0</camunda.template-engine-freemarker.version>
     <!-- 在dependencies标签内添加以下内容 -->
     <dependency>
         <groupId>org.camunda.bpm.springboot</groupId>
         <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
         <version>${camunda.spring-boot.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.camunda.template-engines</groupId>
-        <artifactId>camunda-template-engines-freemarker</artifactId>
-        <version>${camunda.template-engine-freemarker.version}</version>
-    </dependency>
-        <dependency>
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <version>3.0.8</version>
-        <type>pom</type>
     </dependency>
     ```
 3. 下载依赖并构建，测试是否可运行
