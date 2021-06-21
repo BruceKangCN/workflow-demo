@@ -9,7 +9,7 @@ camunda.bpm:
   filter:
     create: All tasks # the name for "show all" filter
   client:
-    base-url: http://localhost:8080/engine-rest
+    base-url: http://localhost:${server.port}/engine-rest
     lock-duration: 10000
     subscriptions:
       scoreProvider: # topic name of the External Service Task

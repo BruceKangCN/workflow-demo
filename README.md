@@ -1,5 +1,7 @@
 # README
 
+![Github Action](https://github.com/BruceKangCN/workflow-demo/actions/workflows/maven.yml/badge.svg)
+
 This is a tutorial for building a BPM back-end using `Java` together with `spring-boot`, `camunda`
 
 ## API
