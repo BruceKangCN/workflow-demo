@@ -39,14 +39,14 @@
 在资源根目录添加 `application.yml`，添加以下内容
 ```yaml
 server:
-    port: 8080
+  port: 8080
 
 camunda.bpm:
-    admin-user:
+  admin-user:
     id: demo
     password: demo
     firstName: Demo
-    filter:
+  filter:
     create: All tasks
 ```
 这将创建一个名为 `Demo` 的管理员，账户ID为 `demo`，账户密码为 `demo`，并且部署资源目录下所有 `**/*.bpmn` 定义的任务  
@@ -217,9 +217,9 @@ curl http://localhost:8080/engine-rest/process-definition/key/loan_process/start
 ```json
 {
     "links": [{
-            "method": "GET",
-            "href": "http://localhost:8080/engine-rest/process-instance/0daa546b-d282-11eb-b654-76e5f95e3e45",
-            "rel": "self"
+        "method": "GET",
+        "href": "http://localhost:8080/engine-rest/process-instance/0daa546b-d282-11eb-b654-76e5f95e3e45",
+        "rel": "self"
     }],
     "id": "0daa546b-d282-11eb-b654-76e5f95e3e45",
     "definitionId": "loan_process:1:00c5946c-d27f-11eb-b654-76e5f95e3e45",
