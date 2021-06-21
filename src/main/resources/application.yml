@@ -9,8 +9,8 @@ camunda.bpm:
   filter:
     create: All tasks # the name for "show all" filter
   client:
-    base-url: http://localhost:${server.port}/engine-rest
-    lock-duration: 10000
+    base-url: http://localhost:${server.port}/engine-rest # the URL pointing to the Camunda Platform Runtime REST API
+    lock-duration: 10000 # defines how many milliseconds the External Tasks are locked until they can be fetched again
     subscriptions:
       scoreProvider: # topic name of the External Service Task
         variable-names: [] # our business logic doesn't require any variables, so don't fetch them
@@ -18,17 +18,9 @@ camunda.bpm:
       loanGranter:
         variable-names: customerId, creditScore # only fetch these two variables
         process-definition-key: loan_process
-
-spring:
-  quartz:
-    job-store-type: jdbc # store jobs in h2 database, change this to "memory" for in-memory storage
-    properties.org.quartz:
-      scheduler:
-        instanceId: AUTO
-      threadPool:
-        threadCount: 4
-  datasource:
-    platform: h2
+      requestRejecter:
+        variable-names: customerId, creditScore
+        process-definition-key: loan_process
 
 logging:
   file: log/${spring.application.name}.log
