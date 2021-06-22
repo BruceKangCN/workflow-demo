@@ -1,0 +1,13 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: workflow-task
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost}:${NACOS_SERVER_PORT:8848}
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:localhost}:${NACOS_SERVER_PORT:8848}
+        file-extension: yaml

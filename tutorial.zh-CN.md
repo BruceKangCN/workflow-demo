@@ -276,6 +276,8 @@ curl http://localhost:8080/engine-rest/process-definition/key/loan_process/start
 
 ## 微服务
 
+**`Spring Cloud` 的 `2020.0.0` 以上版本不会自动读取 `bootstrap` 配置文件，需额外引入 `org.springframework.cloud:spring-cloud-starter-bootstrap` 依赖**  
+
 若要把该项目转化为微服务，需要创建2个模块：
 
 * `workflow`: 仅包含启动类，引入 `camunda-bpm-spring-boot-starter-webapp` 和 `camunda-bpm-spring-boot-starter-rest` 依赖，负责提供 **Web App** 以及 `REST API`

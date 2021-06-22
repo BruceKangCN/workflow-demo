@@ -2,89 +2,88 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.7</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
     <groupId>org.bkcloud.fleet</groupId>
     <artifactId>workflow</artifactId>
     <version>0.0.3</version>
-    <name>workflow</name>
+    <packaging>pom</packaging>
+    <name>Workflow</name>
     <description>a workflow application based on camunda, quartz, freemarker and spring-boot</description>
+
+    <modules>
+        <module>workflow-core</module>
+        <module>workflow-task</module>
+    </modules>
 
     <properties>
         <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>2.4.7</spring-boot.version>
+        <spring-cloud.version>2020.0.0</spring-cloud.version>
+        <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
         <camunda.spring-boot.version>7.15.0</camunda.spring-boot.version>
-        <camunda.template-engine.freemarker.version>2.0.0</camunda.template-engine.freemarker.version>
     </properties>
 
-    <dependencies>
-        <!-- spring boot -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-        </dependency><!-- for better IO performance -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
-        <!-- camunda -->
-        <dependency>
-            <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
-            <version>${camunda.spring-boot.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency><!-- web administration for camunda -->
-        <dependency>
-            <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
-            <version>${camunda.spring-boot.version}</version>
-        </dependency><!-- camunda engine rest  -->
-        <dependency>
-            <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
-            <version>${camunda.spring-boot.version}</version>
-        </dependency><!-- for external task client -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency><!-- in-memory database -->
-
-        <!-- unit test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency><!-- for unit test -->
-    </dependencies>
+            <!-- camunda -->
+            <dependency>
+                <groupId>org.camunda.bpm.springboot</groupId>
+                <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
+                <version>${camunda.spring-boot.version}</version>
+            </dependency><!-- web administration for camunda -->
+            <dependency>
+                <groupId>org.camunda.bpm.springboot</groupId>
+                <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
+                <version>${camunda.spring-boot.version}</version>
+            </dependency><!-- camunda engine rest  -->
+            <dependency>
+                <groupId>org.camunda.bpm.springboot</groupId>
+                <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
+                <version>${camunda.spring-boot.version}</version>
+            </dependency><!-- for external task client -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>1.4.200</version>
+                <scope>runtime</scope>
+            </dependency><!-- in-memory database -->
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${project.parent.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
             </plugin>
         </plugins>
     </build>

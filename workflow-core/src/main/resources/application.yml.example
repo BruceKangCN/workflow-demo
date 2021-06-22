@@ -1,0 +1,7 @@
+camunda.bpm:
+  admin-user: # user-id, password, user-name for camunda web app
+    id: demo
+    password: demo
+    firstName: Demo
+  filter:
+    create: All tasks # the name for "show all" filter
