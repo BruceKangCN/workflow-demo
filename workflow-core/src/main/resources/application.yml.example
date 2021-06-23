@@ -5,3 +5,11 @@ camunda.bpm:
     firstName: Demo
   filter:
     create: All tasks # the name for "show all" filter
+
+# uncomment below to customize datasource used in camunda process engine
+# spring:
+#   datasource:
+#     driver-class-name: com.mysql.cj.jdbc.Driver
+#     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:camunda}?serverTimezone=UTC
+#     username: ${MYSQL_USER:root}
+#     password: ${MYSQL_PASSWORD:root}
