@@ -5,12 +5,7 @@
       <bpmn:outgoing>Flow_0liai2y</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0liai2y" sourceRef="StartEvent_1" targetRef="Activity_0ysb1fc" />
-    <bpmn:userTask id="Activity_0ysb1fc" name="check the request">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="approved" label="Approved?" type="boolean" />
-        </camunda:formData>
-      </bpmn:extensionElements>
+    <bpmn:userTask id="Activity_0ysb1fc" name="check the request" camunda:formKey="camunda-forms:deployment:foobar.form">
       <bpmn:incoming>Flow_0liai2y</bpmn:incoming>
       <bpmn:outgoing>Flow_0yl0oje</bpmn:outgoing>
     </bpmn:userTask>
@@ -21,13 +16,13 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="loanApproval">
-      <bpmndi:BPMNEdge id="Flow_0liai2y_di" bpmnElement="Flow_0liai2y">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="270" y="117" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0yl0oje_di" bpmnElement="Flow_0yl0oje">
         <di:waypoint x="370" y="117" />
         <di:waypoint x="432" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0liai2y_di" bpmnElement="Flow_0liai2y">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="99" width="36" height="36" />
