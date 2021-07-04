@@ -5,6 +5,9 @@ camunda.bpm:
     firstName: Demo
   filter:
     create: All tasks # the name for "show all" filter
+  run.cors:
+    enabled: true
+    allowed-origins: "*"
 
 # uncomment below to customize datasource used in camunda process engine
 # spring:
